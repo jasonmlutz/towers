@@ -1,44 +1,88 @@
 class Game {
-  constructor() {
-    this.towers = [[4, 3, 2, 1], [], []]
-  }
-
-  run () {
-
+  constructor(height = 4, reader, completionCallback) {
+    this.reader = reader;
+    this.height = height;
+    let startTower = [];
+    for (var i = 0; i < height; i++) {
+      startTower.push(height-i);
+    }
+    this.towers = [startTower, [], []]
   }
 }
 
-Game.prototype.promptMove = function () {
-  // print the stacks
+Game.prototype.run = function (completionCallback) {
+  if (this.isWon()) {
+    completionCallback()
+  } else {
+    this.promptMove(isValidMove)
+  }
+};
+
+Game.prototype.print = function () {
   this.towers.forEach(tower => {
     let towerDisplay = '|' + tower.join('-');
     console.log(towerDisplay);
   })
-  // ask user for move selection
-  console.log('please select starting tower for move')
+};
 
-  console.log('please select ending tower for move')
+Game.prototype.promptMove = function (callback) {
+  // print the stacks
+  this.print();
+  // ask user for move selection
+  this.reader.question('starting tower index: ', function(numString1) {
+    this.reader.question('ending tower index', function(numString2) {
+      startTowerIdx = parseInt(numString1);
+      endTowerIdx = parseInt(numString2);
+
+      callback(startTowerIdx, endTowerIdx);
+    });
+  });
 };
 
 Game.prototype.isValidMove = function (startTowerIdx, endTowerIdx) {
-  // return false if startTower is empty
-  let startTower = this.towers[startTowerIdx];
-  let endTower = this.towers[endTowerIdx];
-  if (startTower.length === 0) {
+  // only begin these checks if both indcies are in bounds
+  if ([0,1,2].includes(startTowerIdx) && [0,1,2].includes(endTowerIdx)) {
+    // return false if startTower is empty
+    let startTower = this.towers[startTowerIdx];
+    let endTower = this.towers[endTowerIdx];
+    if (startTower.length === 0) {
+      return false
+    }
+    // return true if endTower is empty
+    if (endTower.length === 0) {
+      return true
+    }
+    // compare 'top' elements of startTower and endTower
+    let startTowerTop = startTower[startTower.length - 1];
+    let endTowerTop = endTower[endTower.length - 1];
+    if (startTowerTop < endTowerTop) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    // at least one index is out of bounds
     return false
   }
-  // return true if endTower is empty
-  if (endTower.length === 0) {
-    return true
-  }
-  // compare 'top' elements of startTower and endTower
-  let startTowerTop = startTower[startTower.length - 1];
-  let endTowerTop = endTower[endTower.length - 1];
-  if (startTowerTop < endTowerTop) {
+
+};
+
+Game.prototype.move = function (startTowerIdx, endTowerIdx) {
+  if (this.isValidMove(startTowerIdx, endTowerIdx)) {
+    let startTower = this.towers[startTowerIdx];
+    let endTower = this.towers[endTowerIdx];
+    let mover = startTower.pop();
+    endTower.push(mover);
     return true;
   } else {
-    return false;
+    return false
   }
 };
 
-game = new Game;
+Game.prototype.isWon = function () {
+  if (this.towers[2].length === this.height) {
+    return true
+  } else {
+    return false
+  }
+};
