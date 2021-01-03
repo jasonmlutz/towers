@@ -1,6 +1,5 @@
 class Game {
-  constructor(height = 3) {
-    this.height = height;
+  constructor(height) {
     let startTower = [];
     for (var i = 0; i < height; i++) {
       startTower.push(height-i);
@@ -35,12 +34,8 @@ class Game {
     }
   }
 
-  isWon() {
-    if (this.towers[2].length === this.height || this.towers[1].length === this.height) {
-      return true
-    } else {
-      return false
-    }
+  isWon(height) {
+    return (this.towers[1].length === height || this.towers[2].length === height )
   }
 
   move(startTowerIdx, endTowerIdx) {
@@ -75,15 +70,14 @@ class Game {
     });
   }
 
-  run(reader, completionCallback) {
+  run(reader, completionCallback, height) {
     this.promptMove(reader, (startTowerIdx, endTowerIdx) => {
       if (!this.move(startTowerIdx, endTowerIdx)) {
         console.log('invalid move!');
       }
-
-      if (!this.isWon()) {
+      if (!this.isWon(height)) {
         // game is not won, continue!
-        this.run(reader, completionCallback);
+        this.run(reader, completionCallback, height);
       } else {
         this.print();
         console.log('you win!');
