@@ -5,16 +5,22 @@ const reader = readline.createInterface({
   output: process.stdout
 });
 
-let g = new Game();
-g.run(reader, completion);
+reader.question('tower height? ', heightString => {
+  let height = parseInt(heightString)
+  let g = new Game(height);
+  g.run(reader, completion, height);
 
-function completion() {
-  reader.question('play again? y or no: ', restartGame => {
-    if (restartGame === "y") {
-      g = new Game();
-      g.run(reader, completion);
-    } else {
-      reader.close();
-    }
-  });
-};
+  function completion() {
+    reader.question('play again? y or no: ', restartGame => {
+      if (restartGame === "y") {
+        reader.question('tower height? ', heightString => {
+          let height = parseInt(heightString);
+          let g = new Game(height);
+          g.run(reader, completion, height);
+        })
+      } else {
+        reader.close();
+      }
+    });
+  };
+});
