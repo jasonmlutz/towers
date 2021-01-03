@@ -1,7 +1,8 @@
 class Game {
   constructor(height = 4, reader, completionCallback) {
-    this.reader = reader;
     this.height = height;
+    this.reader = reader;
+    this.completionCallback = completionCallback;
     let startTower = [];
     for (var i = 0; i < height; i++) {
       startTower.push(height-i);
@@ -30,7 +31,7 @@ Game.prototype.promptMove = function (callback) {
   this.print();
   // ask user for move selection
   this.reader.question('starting tower index: ', function(numString1) {
-    this.reader.question('ending tower index', function(numString2) {
+    this.reader.question('ending tower index: ', function(numString2) {
       startTowerIdx = parseInt(numString1);
       endTowerIdx = parseInt(numString2);
 
@@ -86,3 +87,5 @@ Game.prototype.isWon = function () {
     return false
   }
 };
+
+module.exports = Game;
