@@ -1,2 +1,2 @@
 # towers
-Towers of Hanoi js/jquery implementation
+Towers of Hanoi js implementation
